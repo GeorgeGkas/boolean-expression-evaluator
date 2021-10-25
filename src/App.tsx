@@ -1,4 +1,3 @@
-import React from "react";
 type Args = { [argname: string]: boolean };
 type Operation = any; /* ...todo:
 a system for defining logical operations 
