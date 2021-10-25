@@ -11,6 +11,7 @@ a system for defining logical operations
 function evaluateOperation(operation: Operation, args: Args): boolean {
   /* ...todo: implement an evaluator for your operations, 
   given some args */
+  return true
 }
 
 function OperationBuilder(props: {
@@ -18,6 +19,7 @@ function OperationBuilder(props: {
   onChange: (value: Operation) => void;
 }): JSX.Element {
   /* ...todo: an ugly gui for creating operations */
+  return <></>
 }
 
 export default function App() {
