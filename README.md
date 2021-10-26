@@ -9,10 +9,11 @@ Develop a system that will allow users to create and evaluate [Boolean expressio
 - Each **Arg** will consist of two values, a `name` of type string and a [`truth value`](https://en.wikipedia.org/wiki/Truth_value), which will be user-defined.
 - **Users** will be able to change each corresponding **Arg** values.
 - Every time an **Arg** value is updated the changes should be reflected in the **Operation**, and the final value should be recalculated.
-- The default name value of a new **Arg** should be equal to `newarg` and the default value should be equal to **False**.
+- The default name value of a new **Arg** should be equal to `newarg${ID}`, where `ID` a unique identifier, and the default value should be equal to `false`.
 
 #### Out of scope
 - **Users** will not being able to delete **Args** once their defined.
+- We do not cover the case where two arguments have the same name and how the update should be resolved in the **Operation**.
 
 ### Defining Operation
 - **Users** will be able to define custom **Operation** by combining **Args** or constant truth values with the basic binary operators `and` and `or`. 
