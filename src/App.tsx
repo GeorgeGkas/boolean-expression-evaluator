@@ -1,8 +1,8 @@
 import React from "react";
 import ArgsBuilder from "./ArgsBuilder";
-import { renameArgsKeysInPlace } from "./utils";
+import type { Args } from "./ArgsBuilder";
+import { renameArgsKeysInPlace } from "./renameArgsKeysInPlace";
 
-export type Args = { [argname: string]: boolean };
 type Operation = any; /* ...todo:
 a system for defining logical operations 
 (not, and, or... more if you want) that can be passed:

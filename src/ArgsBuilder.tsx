@@ -1,6 +1,7 @@
 import React from 'react'
+import type { IArgsChange } from './App'
 
-import type { Args, IArgsChange } from './App'
+export type Args = { [argname: string]: boolean };
 
 const ArgEntry = (onArgsChange: (changedArgs: IArgsChange) => void) => ([argName, argValue]: [string, boolean], idx: number): JSX.Element => {
   const onArgValueChange = (e: React.ChangeEvent<HTMLSelectElement>) => onArgsChange({ 
