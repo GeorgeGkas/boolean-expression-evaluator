@@ -48,7 +48,6 @@ export default function ArgsBuilder(props: {
   args: Args,
   onArgsChange: (changedArgs: IArgsChange) => void
 }): JSX.Element {
-  console.log(props.args)
   const createNewArg = () => props.onArgsChange({
     old: {},
     new: {
