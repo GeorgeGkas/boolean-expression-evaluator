@@ -24,6 +24,7 @@ export interface IGenericBinaryExpressionTreeNode {
   type: Operation.GENERIC
   value: 'select...'
   parent: BinaryExpressionTreeNodeParentType
+  level: number
 }
 
 export interface IArgumentBinaryExpressionTreeNode {
@@ -31,6 +32,7 @@ export interface IArgumentBinaryExpressionTreeNode {
   type: Operation.ARGUMENT
   value: string
   parent: BinaryExpressionTreeNodeParentType
+  level: number
 }
 
 export interface IConstantBinaryExpressionTreeNode {
@@ -38,6 +40,7 @@ export interface IConstantBinaryExpressionTreeNode {
   type: Operation.CONSTANT
   value: boolean
   parent: BinaryExpressionTreeNodeParentType
+  level: number
 }
 
 export interface IConjunctionBinaryExpressionTreeNode<T> {
@@ -45,6 +48,7 @@ export interface IConjunctionBinaryExpressionTreeNode<T> {
   type: Operation.CONJUNCTION
   value: T
   parent: BinaryExpressionTreeNodeParentType
+  level: number
 }
 
 export interface IDisjunctionBinaryExpressionTreeNode<T> {
@@ -52,6 +56,7 @@ export interface IDisjunctionBinaryExpressionTreeNode<T> {
   type: Operation.DISJUNCTION
   value: T
   parent: BinaryExpressionTreeNodeParentType
+  level: number
 }
 
 export class BinaryExpressionTree {
@@ -59,7 +64,7 @@ export class BinaryExpressionTree {
   private nodePool: Map<BinaryExpressionTreeNodeIdType, BinaryExpressionTreeNodeType<Set<BinaryExpressionTreeNodeIdType>>> = new Map()
 
   constructor() {
-    const root = this.createGenericNode(null)
+    const root = this.createGenericNode(null, 0)
     this.rootId = root.id
     this.nodePool.set(root.id, root)
   }
@@ -77,15 +82,17 @@ export class BinaryExpressionTree {
   }
 
   addChildNode<T>(type: Operation, parentId: BinaryExpressionTreeNodeIdType, value?: T): BinaryExpressionTreeNodeIdType {
-    const node = {
-      [Operation.GENERIC]: () => this.createGenericNode(parentId),
-      [Operation.ARGUMENT]: () => this.createArgumentBinaryExpressionTreeNode(parentId, value as unknown as string),
-      [Operation.CONSTANT]: () => this.createConstantBinaryExpressionTreeNode(parentId, value as unknown as boolean),
-      [Operation.CONJUNCTION]: () => this.createConjunctionBinaryExpressionTreeNode(parentId),
-      [Operation.DISJUNCTION]: () => this.createDisjunctionBinaryExpressionTreeNode(parentId)
-    }[type]()
+    const parent = this.nodePool.get(parentId)!
 
-    const parent = this.nodePool.get(parentId)!;
+    const node = {
+      [Operation.GENERIC]: () => this.createGenericNode(parentId, parent.level + 1),
+      [Operation.ARGUMENT]: () => this.createArgumentBinaryExpressionTreeNode(parentId, value as unknown as string, parent.level + 1),
+      [Operation.CONSTANT]: () => this.createConstantBinaryExpressionTreeNode(parentId, value as unknown as boolean, parent.level + 1),
+      [Operation.CONJUNCTION]: () => this.createConjunctionBinaryExpressionTreeNode(parentId, parent.level + 1),
+      [Operation.DISJUNCTION]: () => this.createDisjunctionBinaryExpressionTreeNode(parentId, parent.level + 1)
+    }[type]();
+
+   
     (parent.value as Set<BinaryExpressionTreeNodeIdType>).add(node.id)
     this.nodePool.set(node.id, node)
 
@@ -130,8 +137,8 @@ export class BinaryExpressionTree {
     if ((newNodeType === Operation.CONJUNCTION || newNodeType === Operation.DISJUNCTION) && (
       node.type !== Operation.CONJUNCTION && node.type !== Operation.DISJUNCTION
     )) {
-      const genericNode1 = this.createGenericNode(node.id)
-      const genericNode2 = this.createGenericNode(node.id)
+      const genericNode1 = this.createGenericNode(node.id, node.level + 1)
+      const genericNode2 = this.createGenericNode(node.id, node.level + 1)
      
       this.nodePool.set(genericNode1.id, genericNode1)
       this.nodePool.set(genericNode2.id, genericNode2)
@@ -151,42 +158,45 @@ export class BinaryExpressionTree {
     node.value = value
   }
 
-  createGenericNode(parent: BinaryExpressionTreeNodeParentType): IGenericBinaryExpressionTreeNode {
+  createGenericNode(parent: BinaryExpressionTreeNodeParentType, level: number): IGenericBinaryExpressionTreeNode {
     return {
       id: uuid(),
       type: Operation.GENERIC,
       value: 'select...',
-      parent
+      parent,
+      level
     }
   }
   
-  createArgumentBinaryExpressionTreeNode(parent: BinaryExpressionTreeNodeParentType, argValue: string): IArgumentBinaryExpressionTreeNode {
+  createArgumentBinaryExpressionTreeNode(parent: BinaryExpressionTreeNodeParentType, argValue: string, level: number): IArgumentBinaryExpressionTreeNode {
     const thisNodeId = uuid()
   
     return {
       id: thisNodeId,
       type: Operation.ARGUMENT,
       value: argValue,
-      parent
+      parent,
+      level
     }
   }
   
-  createConstantBinaryExpressionTreeNode(parent: BinaryExpressionTreeNodeParentType, constantValue: boolean): IConstantBinaryExpressionTreeNode {
+  createConstantBinaryExpressionTreeNode(parent: BinaryExpressionTreeNodeParentType, constantValue: boolean, level: number): IConstantBinaryExpressionTreeNode {
     const thisNodeId = uuid()
   
     return {
       id: thisNodeId,
       type: Operation.CONSTANT,
       value: constantValue,
-      parent
+      parent,
+      level
     }
   }
   
-  createDisjunctionBinaryExpressionTreeNode(parent: BinaryExpressionTreeNodeParentType): IDisjunctionBinaryExpressionTreeNode<Set<BinaryExpressionTreeNodeIdType>> {
+  createDisjunctionBinaryExpressionTreeNode(parent: BinaryExpressionTreeNodeParentType, level: number): IDisjunctionBinaryExpressionTreeNode<Set<BinaryExpressionTreeNodeIdType>> {
     const thisNodeId = uuid()
 
-    const genericNode1 = this.createGenericNode(thisNodeId)
-    const genericNode2 = this.createGenericNode(thisNodeId)
+    const genericNode1 = this.createGenericNode(thisNodeId, level + 1)
+    const genericNode2 = this.createGenericNode(thisNodeId, level + 1)
 
     this.nodePool.set(genericNode1.id, genericNode1)
     this.nodePool.set(genericNode2.id, genericNode2)
@@ -195,16 +205,17 @@ export class BinaryExpressionTree {
       id: thisNodeId,
       type: Operation.DISJUNCTION,
       value: new Set([genericNode1.id, genericNode2.id]),
-      parent
+      parent,
+      level
     }
   }
   
-  createConjunctionBinaryExpressionTreeNode(parent: BinaryExpressionTreeNodeParentType): IConjunctionBinaryExpressionTreeNode<Set<BinaryExpressionTreeNodeIdType>> {
+  createConjunctionBinaryExpressionTreeNode(parent: BinaryExpressionTreeNodeParentType, level: number): IConjunctionBinaryExpressionTreeNode<Set<BinaryExpressionTreeNodeIdType>> {
     const thisNodeId = uuid()
    
 
-    const genericNode1 = this.createGenericNode(thisNodeId)
-    const genericNode2 = this.createGenericNode(thisNodeId)
+    const genericNode1 = this.createGenericNode(thisNodeId, level + 1)
+    const genericNode2 = this.createGenericNode(thisNodeId, level + 1)
 
     this.nodePool.set(genericNode1.id, genericNode1)
     this.nodePool.set(genericNode2.id, genericNode2)
@@ -213,7 +224,8 @@ export class BinaryExpressionTree {
       id: thisNodeId,
       type: Operation.CONJUNCTION,
       value: new Set([genericNode1.id, genericNode2.id]),
-      parent
+      parent,
+      level
     }
   }
 
