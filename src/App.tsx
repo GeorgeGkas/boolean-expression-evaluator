@@ -2,14 +2,9 @@ import React from "react";
 import ArgsBuilder from "./ArgsBuilder";
 import type { Args } from "./ArgsBuilder";
 import { renameArgsKeysInPlace } from "./renameArgsKeysInPlace";
-
-type Operation = any; /* ...todo:
-a system for defining logical operations 
-(not, and, or... more if you want) that can be passed:
- - selected args by name: (X and Y)
- - constant values not dependent on args: (true and X)
- - other operations: ((X and Y) or Z) 
- */
+import { OperationBuilder } from "./OperationBuilder";
+import BinaryExpressionTreeProvider, { useBinaryExpressionTree } from "./BinaryExpressionTreeProvider";
+import { PostfixEvaluator } from "./PostfixEvaluator";
 
 export interface IArgsChange {
   old: {
@@ -22,22 +17,22 @@ export interface IArgsChange {
   }
 }
 
-function evaluateOperation(operation: Operation, args: Args): boolean {
-  /* ...todo: implement an evaluator for your operations, 
-  given some args */
-  return true
-}
-
-function OperationBuilder(props: {
-  value: Operation;
-  onChange: (value: Operation) => void;
-}): JSX.Element {
-  /* ...todo: an ugly gui for creating operations */
-  return <></>
-}
-
 export default function App() {
   const [args, setArgs] = React.useState<Args>({})
+  const binaryExpressionTree = useBinaryExpressionTree()
+  const [binaryExpressionTreeNodes, setBinaryExpressionTreeNodes] = React.useState(Array.from(binaryExpressionTree.traversalDFS(binaryExpressionTree.getRootId())))
+  const [binaryExpressionTreeNodesPostOrder, setBinaryExpressionTreeNodesPostOrder] = React.useState(Array.from(binaryExpressionTree.traversalPostOrder(binaryExpressionTree.getRootId())))
+
+
+  const updateBinaryExpressionTreeNodes = () => {
+    setBinaryExpressionTreeNodes(
+      Array.from(binaryExpressionTree.traversalDFS(binaryExpressionTree.getRootId()))
+    )
+
+    setBinaryExpressionTreeNodesPostOrder(
+      Array.from(binaryExpressionTree.traversalPostOrder(binaryExpressionTree.getRootId()))
+    )
+  }
 
   const onArgsChange = (changedArgs: IArgsChange) => {
     if (!changedArgs.old.name) { // change reflects new arg addition
@@ -62,10 +57,15 @@ export default function App() {
   }
 
   return (
-    <div>
-      <ArgsBuilder args={args} onArgsChange={onArgsChange} />
-      {/* todo: use <OperationBuilder> and have an interface
-      for entering arguments and seeing the result */}
-    </div>
+    <BinaryExpressionTreeProvider>
+      <div>
+        <ArgsBuilder args={args} onArgsChange={onArgsChange} />
+        <OperationBuilder args={args} 
+        binaryExpressionTreeNodes={binaryExpressionTreeNodes}
+        updateBinaryExpressionTreeNodes={updateBinaryExpressionTreeNodes}
+        binaryExpressionTree={binaryExpressionTree}/>
+        <PostfixEvaluator  binaryExpressionTreeNodesPostOrder={binaryExpressionTreeNodesPostOrder} args={args}/>
+      </div>
+    </BinaryExpressionTreeProvider>
   );
 }
