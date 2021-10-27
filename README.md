@@ -27,3 +27,4 @@ Develop a system that will allow users to create and evaluate [Boolean expressio
 - The **User** should be able to define nested operations that will be evaluated into a big **Operation**.
 - Deleting an operation should also delete all the nested operations.
 - When the user add a new operation, the default selected values should be blank and not affect the final result.
+- For conjunction and disjunction operations, do not allow users to remove their children if they are only two. These operations need at least two operands to function.

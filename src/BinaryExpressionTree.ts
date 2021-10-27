@@ -101,19 +101,25 @@ export class BinaryExpressionTree {
 
   removeNodeById(nodeIdToRemove: BinaryExpressionTreeNodeIdType) {
     const thisNode = this.nodePool.get(nodeIdToRemove)!
-    
+
     if (thisNode.type === Operation.GENERIC) {
       if (thisNode.id === this.rootId) {
         return
-      } else {
-        const parentNode = this.nodePool.get(thisNode.parent!)!;
-        (parentNode.value as Set<BinaryExpressionTreeNodeIdType>).delete(thisNode.id)
-        this.nodePool.delete(thisNode.id)
       }
 
+      const parentNode = this.nodePool.get(thisNode.parent!)!
+
+      if (parentNode.type === Operation.CONJUNCTION || parentNode.type === Operation.DISJUNCTION) {
+        if ((parentNode.value as Set<BinaryExpressionTreeNodeIdType>).size < 3) {
+          return
+        }
+      }
+
+      (parentNode!.value as Set<BinaryExpressionTreeNodeIdType>).delete(thisNode.id)
+      this.nodePool.delete(thisNode.id)
+    
       return
     }
-
 
     for (const childNodesToRemove of this.traversalDFS(nodeIdToRemove)) {
       if (childNodesToRemove.id === nodeIdToRemove) {
@@ -149,7 +155,7 @@ export class BinaryExpressionTree {
     }
 
     node.type = newNodeType
-    node.value = newNodeValue!
+    node.value = newNodeValue ?? node.value
   }
 
   changeNodeValueById(nodeId: BinaryExpressionTreeNodeIdType, value: string | boolean | Set<BinaryExpressionTreeNodeIdType>) {

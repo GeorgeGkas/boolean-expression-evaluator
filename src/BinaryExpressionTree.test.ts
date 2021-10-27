@@ -164,7 +164,30 @@ test('should replace complex tree with generic and remove all the children.', ()
 
 })
 
-test('should remove subtree node if is generic and remove it from parent', () => {
+test('should remove subtree complex node if is generic and remove it from parent', () => {
+  const tree = new BinaryExpressionTree()
+  tree.changeNodeTypeById(tree.getRootId(), Operation.DISJUNCTION)
+  const rootNode = tree.getNodeFromId(tree.getRootId())!
+  tree.addChildNode(Operation.GENERIC, tree.getRootId())
+  const rootNodeChildren = Array.from((rootNode.value as Set<BinaryExpressionTreeNodeIdType>))
+
+  expect(tree.getNodes().length).toBe(4)
+  expect(rootNodeChildren.length).toBe(3)
+
+  const nodeIdToRemove = rootNodeChildren[0]
+
+  expect(tree.getNodeFromId(nodeIdToRemove)).toBeTruthy()
+  expect(tree.getNodeFromId(nodeIdToRemove)!.type).toBe(Operation.GENERIC)
+
+  tree.removeNodeById(nodeIdToRemove)
+
+  expect(tree.getNodes().length).toBe(3)
+  expect(tree.getNodeFromId(nodeIdToRemove)).toBeFalsy()
+
+  expect(Array.from((rootNode.value as Set<BinaryExpressionTreeNodeIdType>)).length).toBe(2)
+})
+
+test('should not remove subtree complex node is has only two children', () => {
   const tree = new BinaryExpressionTree()
   tree.changeNodeTypeById(tree.getRootId(), Operation.DISJUNCTION)
   const rootNode = tree.getNodeFromId(tree.getRootId())!
@@ -180,10 +203,10 @@ test('should remove subtree node if is generic and remove it from parent', () =>
 
   tree.removeNodeById(nodeIdToRemove)
 
-  expect(tree.getNodes().length).toBe(2)
-  expect(tree.getNodeFromId(nodeIdToRemove)).toBeFalsy()
+  expect(tree.getNodes().length).toBe(3)
+  expect(tree.getNodeFromId(nodeIdToRemove)).toBeTruthy()
 
-  expect(Array.from((rootNode.value as Set<BinaryExpressionTreeNodeIdType>)).length).toBe(1)
+  expect(Array.from((rootNode.value as Set<BinaryExpressionTreeNodeIdType>)).length).toBe(2)
 })
 
 test('should replace simple subtree into generic.', () => {
