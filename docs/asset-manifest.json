@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/boolean-expression-evaluator/static/css/main.50d4af6f.chunk.css",
-    "main.js": "/boolean-expression-evaluator/static/js/main.21e78287.chunk.js",
-    "main.js.map": "/boolean-expression-evaluator/static/js/main.21e78287.chunk.js.map",
+    "main.js": "/boolean-expression-evaluator/static/js/main.e11ee385.chunk.js",
+    "main.js.map": "/boolean-expression-evaluator/static/js/main.e11ee385.chunk.js.map",
     "runtime-main.js": "/boolean-expression-evaluator/static/js/runtime-main.70aa4e3f.js",
     "runtime-main.js.map": "/boolean-expression-evaluator/static/js/runtime-main.70aa4e3f.js.map",
     "static/js/2.da852913.chunk.js": "/boolean-expression-evaluator/static/js/2.da852913.chunk.js",
@@ -15,6 +15,6 @@
     "static/js/runtime-main.70aa4e3f.js",
     "static/js/2.da852913.chunk.js",
     "static/css/main.50d4af6f.chunk.css",
-    "static/js/main.21e78287.chunk.js"
+    "static/js/main.e11ee385.chunk.js"
   ]
 }

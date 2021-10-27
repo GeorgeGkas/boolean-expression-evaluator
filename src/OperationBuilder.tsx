@@ -66,7 +66,6 @@ const normalizeNodeValue = (
   value: string | boolean | Set<BinaryExpressionTreeNodeIdType>,
   args: Args
 ) => {
-  console.log(value)
   if (typeof value === 'object') {
     if (type === Operation.CONJUNCTION) {
       return Operation.CONJUNCTION
