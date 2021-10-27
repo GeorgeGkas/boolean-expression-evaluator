@@ -1,10 +1,15 @@
-import { BinaryExpressionTree, BinaryExpressionTreeNodeIdType, BinaryExpressionTreeNodeTypeArray, Operation } from './BinaryExpressionTree';
+import {
+  BinaryExpressionTree,
+  BinaryExpressionTreeNodeIdType,
+  BinaryExpressionTreeNodeTypeArray,
+  Operation,
+} from './BinaryExpressionTree'
 
 test('should return generic node type on new tree', () => {
   const tree = new BinaryExpressionTree()
   const treeJSON = tree.toJSON()
 
-  expect(treeJSON).toHaveProperty('id') 
+  expect(treeJSON).toHaveProperty('id')
   expect(treeJSON.type).toBe(Operation.GENERIC)
   expect(treeJSON.value).toBe('select...')
   expect(treeJSON.parent).toBe(null)
@@ -17,7 +22,7 @@ test('should change root operation type into constant true', () => {
 
   const treeJSON = tree.toJSON()
 
-  expect(treeJSON).toHaveProperty('id') 
+  expect(treeJSON).toHaveProperty('id')
   expect(treeJSON.type).toBe(Operation.CONSTANT)
   expect(treeJSON.value).toBe(true)
   expect(treeJSON.parent).toBe(null)
@@ -30,7 +35,7 @@ test('should change root operation type into constant false', () => {
 
   const treeJSON = tree.toJSON()
 
-  expect(treeJSON).toHaveProperty('id') 
+  expect(treeJSON).toHaveProperty('id')
   expect(treeJSON.type).toBe(Operation.CONSTANT)
   expect(treeJSON.value).toBe(false)
   expect(treeJSON.parent).toBe(null)
@@ -39,11 +44,15 @@ test('should change root operation type into constant false', () => {
 test('should change root operation type into custom argument name', () => {
   const tree = new BinaryExpressionTree()
 
-  tree.changeNodeTypeById(tree.getRootId(), Operation.ARGUMENT, 'some argument name')
+  tree.changeNodeTypeById(
+    tree.getRootId(),
+    Operation.ARGUMENT,
+    'some argument name'
+  )
 
   const treeJSON = tree.toJSON()
 
-  expect(treeJSON).toHaveProperty('id') 
+  expect(treeJSON).toHaveProperty('id')
   expect(treeJSON.type).toBe(Operation.ARGUMENT)
   expect(treeJSON.value).toBe('some argument name')
   expect(treeJSON.parent).toBe(null)
@@ -56,7 +65,7 @@ test('should change root operation type into conjunction', () => {
 
   const treeJSON = tree.toJSON()
 
-  expect(treeJSON).toHaveProperty('id') 
+  expect(treeJSON).toHaveProperty('id')
   expect(treeJSON.type).toBe(Operation.CONJUNCTION)
   expect((treeJSON.value as BinaryExpressionTreeNodeTypeArray).length).toBe(2)
   expect(treeJSON.parent).toBe(null)
@@ -69,7 +78,7 @@ test('should change root operation type into disjunction', () => {
 
   const treeJSON = tree.toJSON()
 
-  expect(treeJSON).toHaveProperty('id') 
+  expect(treeJSON).toHaveProperty('id')
   expect(treeJSON.type).toBe(Operation.DISJUNCTION)
   expect((treeJSON.value as BinaryExpressionTreeNodeTypeArray).length).toBe(2)
   expect(treeJSON.parent).toBe(null)
@@ -82,7 +91,7 @@ test('should return simple disjunction operation with constant operands', () => 
 
   const treeJSON = tree.toJSON()
 
-  expect(treeJSON).toHaveProperty('id') 
+  expect(treeJSON).toHaveProperty('id')
   expect(treeJSON.type).toBe(Operation.DISJUNCTION)
   expect((treeJSON.value as BinaryExpressionTreeNodeTypeArray).length).toBe(3)
   expect(treeJSON.parent).toBe(null)
@@ -95,9 +104,9 @@ test('should traverse tree in post order', () => {
   const id2 = tree.addChildNode(Operation.CONSTANT, id, false)
   tree.changeNodeTypeById(id2, Operation.DISJUNCTION)
 
-  expect(Array.from(tree.traversalPostOrder(tree.getRootId())).length).toBe(9) 
-  expect(Array.from(tree.traversalPostOrder(id)).length).toBe(6) 
-  expect(Array.from(tree.traversalPostOrder(id2)).length).toBe(3) 
+  expect(Array.from(tree.traversalPostOrder(tree.getRootId())).length).toBe(9)
+  expect(Array.from(tree.traversalPostOrder(id)).length).toBe(6)
+  expect(Array.from(tree.traversalPostOrder(id2)).length).toBe(3)
 })
 
 test('should traverse tree in dfs', () => {
@@ -107,9 +116,9 @@ test('should traverse tree in dfs', () => {
   const id2 = tree.addChildNode(Operation.CONSTANT, id, false)
   tree.changeNodeTypeById(id2, Operation.DISJUNCTION)
 
-  expect(Array.from(tree.traversalDFS(tree.getRootId())).length).toBe(9) 
-  expect(Array.from(tree.traversalDFS(id)).length).toBe(6) 
-  expect(Array.from(tree.traversalDFS(id2)).length).toBe(3) 
+  expect(Array.from(tree.traversalDFS(tree.getRootId())).length).toBe(9)
+  expect(Array.from(tree.traversalDFS(id)).length).toBe(6)
+  expect(Array.from(tree.traversalDFS(id2)).length).toBe(3)
 })
 
 test('should return a JSON representation of the tree with dereferenced values', () => {
@@ -142,7 +151,6 @@ test('should replace simple tree with generic', () => {
 
   expect(tree.getNodeFromId(tree.getRootId())!.type).toBe(Operation.GENERIC)
   expect(tree.getNodes().length).toBe(1)
-
 })
 
 test('should replace complex tree with generic and remove all the children.', () => {
@@ -161,7 +169,6 @@ test('should replace complex tree with generic and remove all the children.', ()
 
   expect(changedNode.type).toBe(Operation.GENERIC)
   expect(changedNode.value).toBe('select...')
-
 })
 
 test('should remove subtree complex node if is generic and remove it from parent', () => {
@@ -169,7 +176,9 @@ test('should remove subtree complex node if is generic and remove it from parent
   tree.changeNodeTypeById(tree.getRootId(), Operation.DISJUNCTION)
   const rootNode = tree.getNodeFromId(tree.getRootId())!
   tree.addChildNode(Operation.GENERIC, tree.getRootId())
-  const rootNodeChildren = Array.from((rootNode.value as Set<BinaryExpressionTreeNodeIdType>))
+  const rootNodeChildren = Array.from(
+    rootNode.value as Set<BinaryExpressionTreeNodeIdType>
+  )
 
   expect(tree.getNodes().length).toBe(4)
   expect(rootNodeChildren.length).toBe(3)
@@ -184,14 +193,18 @@ test('should remove subtree complex node if is generic and remove it from parent
   expect(tree.getNodes().length).toBe(3)
   expect(tree.getNodeFromId(nodeIdToRemove)).toBeFalsy()
 
-  expect(Array.from((rootNode.value as Set<BinaryExpressionTreeNodeIdType>)).length).toBe(2)
+  expect(
+    Array.from(rootNode.value as Set<BinaryExpressionTreeNodeIdType>).length
+  ).toBe(2)
 })
 
 test('should not remove subtree complex node is has only two children', () => {
   const tree = new BinaryExpressionTree()
   tree.changeNodeTypeById(tree.getRootId(), Operation.DISJUNCTION)
   const rootNode = tree.getNodeFromId(tree.getRootId())!
-  const rootNodeChildren = Array.from((rootNode.value as Set<BinaryExpressionTreeNodeIdType>))
+  const rootNodeChildren = Array.from(
+    rootNode.value as Set<BinaryExpressionTreeNodeIdType>
+  )
 
   expect(tree.getNodes().length).toBe(3)
   expect(rootNodeChildren.length).toBe(2)
@@ -206,7 +219,9 @@ test('should not remove subtree complex node is has only two children', () => {
   expect(tree.getNodes().length).toBe(3)
   expect(tree.getNodeFromId(nodeIdToRemove)).toBeTruthy()
 
-  expect(Array.from((rootNode.value as Set<BinaryExpressionTreeNodeIdType>)).length).toBe(2)
+  expect(
+    Array.from(rootNode.value as Set<BinaryExpressionTreeNodeIdType>).length
+  ).toBe(2)
 })
 
 test('should replace simple subtree into generic.', () => {

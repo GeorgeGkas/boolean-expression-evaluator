@@ -1,7 +1,16 @@
-import { Args } from "./ArgsBuilder";
-import { BinaryExpressionTreeNodeType, BinaryExpressionTreeNodeIdType, Operation } from "./BinaryExpressionTree";
+import { Args } from './ArgsBuilder'
+import {
+  BinaryExpressionTreeNodeType,
+  BinaryExpressionTreeNodeIdType,
+  Operation,
+} from './BinaryExpressionTree'
 
-const evaluateOperation = (binaryExpressionTreeNodesPostOrder: BinaryExpressionTreeNodeType<Set<BinaryExpressionTreeNodeIdType>>[], args: Args) => {
+const evaluateOperation = (
+  binaryExpressionTreeNodesPostOrder: BinaryExpressionTreeNodeType<
+    Set<BinaryExpressionTreeNodeIdType>
+  >[],
+  args: Args
+) => {
   let stack: boolean[] = []
 
   for (const node of binaryExpressionTreeNodesPostOrder) {
@@ -15,7 +24,8 @@ const evaluateOperation = (binaryExpressionTreeNodesPostOrder: BinaryExpressionT
       const result = stack.reduce((prev, curr) => prev && curr, stack.shift()!)
       stack = []
       stack.push(result)
-    } else  { // node.type === Operation.DISJUNCTION
+    } else {
+      // node.type === Operation.DISJUNCTION
       const result = stack.reduce((prev, curr) => prev || curr, stack.shift()!)
       stack = []
       stack.push(result)
@@ -27,13 +37,13 @@ const evaluateOperation = (binaryExpressionTreeNodesPostOrder: BinaryExpressionT
 
 export function PostfixEvaluator(props: {
   args: Args
-  binaryExpressionTreeNodesPostOrder: BinaryExpressionTreeNodeType<Set<BinaryExpressionTreeNodeIdType>>[],
+  binaryExpressionTreeNodesPostOrder: BinaryExpressionTreeNodeType<
+    Set<BinaryExpressionTreeNodeIdType>
+  >[]
 }): JSX.Element {
-  const operationResult = String(evaluateOperation(props.binaryExpressionTreeNodesPostOrder, props.args))
-
-  return (
-    <p>
-      {operationResult}
-    </p>
+  const operationResult = String(
+    evaluateOperation(props.binaryExpressionTreeNodesPostOrder, props.args)
   )
+
+  return <p>{operationResult}</p>
 }
